@@ -19,6 +19,11 @@ def create_app():
         decode_responses    = os.getenv('REDIS_DECODE_RESPONSES') == 'True'
     )
 
+    # Holds keys of configurations available in Redis.
+    app.redis_keys = {
+        "is_stop_key": "is_stopped"
+    }
+
     app.redis_exceptions = exceptions
 
     # Add the Redis client to the app context
