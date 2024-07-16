@@ -2,12 +2,19 @@ import psutil
 import os
 import requests
 import smtplib
-from datetime import datetime
+import time
 from dotenv import load_dotenv
 from email.mime.text import MIMEText
 
 # This will load environment variables from the .env file.
 load_dotenv()
+
+# This can be saved to database or into a different file. I added this here just for now.
+errors = {
+    "request_timeout": "responding so slow.",
+    "internal_error": "not responding.",
+    "out_of_memory": "running out of memory. Upgraded!"
+}
 
 # Function for sending emails.
 def send_email(subject, body, to_email = os.getenv('EMAIL_TO')):
@@ -46,6 +53,8 @@ def send_email(subject, body, to_email = os.getenv('EMAIL_TO')):
 def run_script(url):
     try:
 
+        start_time = time.time()
+
         # Memory usage
         memory = psutil.virtual_memory()
         total_memory = memory.total
@@ -56,19 +65,29 @@ def run_script(url):
         disk_usage = psutil.disk_usage('/')
         response = requests.get(url)
 
-        # Check if response status code is NOT 200
-        if response.status_code != 200:
+        end_time = time.time()
+        elapsed_time = int(end_time - start_time)
 
-            raise requests.exceptions.RequestException(True)
+        # Cheeck if status code is 408 or elapsed time is more than 10 seconds.
+        if response.status_code == 408 or elapsed_time > 10:
+    
+            raise requests.exceptions.RequestException("request_timeout")
+
+        # Check if response status code is NOT 200.
+        elif response.status_code != 200:
+
+            raise requests.exceptions.RequestException("internal_error")
+
+        # Check if memory usage is greater than 90% or disk usage is more than 95%.
         elif int(memory_usage) >= 90 or int(disk_usage.percent) >= 95:
 
-            raise requests.exceptions.RequestException()
+            raise requests.exceptions.RequestException("out_of_memory")
 
         return None
 
-    except requests.exceptions.RequestException as is_app_down:
-        subject = "APP IS DOWN" if is_app_down else "RUNNING OUT OF MEMORY"
-        body = "The app is " + (("down as of " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")) if is_app_down else "running out of memory") + "."
+    except requests.exceptions.RequestException as error:
+        subject = "APP WARNING!"
+        body = "The app is " + errors[str(error)]
         send_email(subject, body)
 
 # Call function to run script

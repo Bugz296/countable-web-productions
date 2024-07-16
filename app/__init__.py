@@ -21,7 +21,8 @@ def create_app():
 
     # Holds keys of configurations available in Redis.
     app.redis_keys = {
-        "is_stop_key": "is_stopped"
+        "is_stop_key": "is_stopped",
+        "is_delay_key": "is_delayed"
     }
 
     app.redis_exceptions = exceptions
