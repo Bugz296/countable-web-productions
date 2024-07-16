@@ -12,6 +12,9 @@ def simulate_app_stop():
 
     # Set is_stop_key value to 1.
     current_app.redis.set(current_app.redis_keys["is_stop_key"], 1)
+    
+    # Set is_delay_key value to 0 to avoid conflict.
+    current_app.redis.set(current_app.redis_keys["is_delay_key"], 0)
 
     return 'WARNING: Any succeeding requests will return "HTTP ERROR 500".'
 
@@ -31,6 +34,9 @@ def simulate_app_delay():
 
     # Set cache is_delay value to 11 or n seconds
     current_app.redis.set(current_app.redis_keys["is_delay_key"], delay)
+
+    # Set is_stop_key value to 0.
+    current_app.redis.set(current_app.redis_keys["is_stop_key"], 0)
 
     return 'WARNING: All requests moving forward are now delayed {} seconds.'.format(delay)
 

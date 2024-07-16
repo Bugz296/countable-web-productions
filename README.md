@@ -24,14 +24,14 @@ STEP 3: Add .env file to parent directory. Details are provided via email.
 
 STEP 4: Update the "EMAIL_TO" in .env to your email or any email address you want the email notification to be sent to.
 
-STEP 5: Install https://hub.docker.com/r/namshi/smtp for email sending. (Skip if already installed)
+STEP 5: Install https://hub.docker.com/r/namshi/smtp for email sending. (Skip if already installed and make sure Docker service is on)
 ```bash
   docker pull namshi/smtp
 ```
 
 STEP 6: Run docker container namshi/smtp. (Skip if already running)
 ```bash
-    docker run -d -p 25:25 namshi/smtp
+  docker run -d -p 25:25 namshi/smtp
 ```
 
 Step 7: Login to gmail using account 👉 jeffreycarlcountablewebproduct@gmail.com. Password is provided via email including the QR code for google authentication for 2-Step Verification. [Login to Gmail](https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fmail.google.com%2Fmail%2Fu%2F0%2F&emr=1&followup=https%3A%2F%2Fmail.google.com%2Fmail%2Fu%2F0%2F&ifkv=AdF4I75VMAGqKdZqNlUEMXliAZvPuhh9i8kjlTvQf2vm_Sg5phF6jfh0FcFfsHkZJ4BEHTl97fYr_w&osid=1&passive=1209600&service=mail&flowName=GlifWebSignIn&flowEntry=ServiceLogin&dsh=S721822056%3A1721104524968771&ddm=0)
@@ -106,6 +106,19 @@ NOTE: The cronjob that sends email notification runs every minute, you should be
 
 - Assumptions / Recommendation
     - What I recommend would be separating the container for the app and the script for monitoring computer health. For large applications, if the script is being run on a device same as the application. ie. Observing yourself with your eyes / from within. It is also efficient and effective if there's someone not within the system who would check. Checking the health status with a third party perspective to be short.
+    - Also, I can use a separate service for the web app in the compose.yaml
     - When I worked on this, I read first all the instructions. As I read, I came up with how would I be implementing this. I have already worked on things like this in the past as a hobby, so I knew how do I start. For me, I believe that "A problem well-stated is half-solved" and a problem you know where to start is 75% solved.
+
+- Summary of Assumptions
+    - The Flask web service is properly containerized.
+    - The application can be deployed with a simple docker compose up command.
+    - A periodic health check script is included and runs every minute.
+    - The script can detect non-200 responses, application downtime, and slow responses.
+    - Email notifications are sent for any detected issues.
+    - Configuration is managed via environment variables.
+    - The setup process and functionality are well-documented.
+    - Sensitive information is not included in the repository.
+    - Changes are committed to Git in atomic commits.
+    - These assumptions help ensure that the Flask application and monitoring setup are robust, portable, and easy to configure and test.
 
 Feel free to email me for any assistance. Thank you.
