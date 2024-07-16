@@ -1,13 +1,14 @@
-import redis
-cache = redis.Redis(host='redis', port=6379)
+from flask import current_app
 import time
 
 def get_hit_count():
+    redis_client = current_app.redis
+    redis_exceptions = current_app.redis_exceptions
     retries = 5
     while True:
         try:
-            return cache.incr('hits')
-        except redis.exceptions.ConnectionError as exc:
+            return redis_client.incr('hits')
+        except redis_exceptions.ConnectionError as exc:
             if retries == 0:
                 raise exc
             retries -= 1
